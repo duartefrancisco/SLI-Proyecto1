@@ -32,3 +32,11 @@ class RegresionLineal:
                 plt.title(f"{columna} vs {self.target} - Correlación: {correlacion}")
                 plt.scatter(self.datasetTrain[columna], self.datasetTrain[self.target])
                 plt.show()
+
+    def ObtenerColumna(self, columna, dataset = "train"):
+        if dataset.lower() == "train":
+            return self.datasetTrain[columna]
+        elif dataset.lower() == "test":
+            return self.datasetTest[columna]
+        elif dataset.lower() == "original":
+            return self.datasetOriginal[columna]
