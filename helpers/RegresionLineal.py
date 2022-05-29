@@ -1,3 +1,4 @@
+from typing_extensions import Self
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -12,3 +13,10 @@ class RegresionLineal:
         limiteParticion = int(len(dataset) * trainSize)
         self.datasetTrain = dataset[0 : limiteParticion, :]
         self.datasetTest = dataset[limiteParticion : , : ]
+
+    def AnalisisExploratorio(self):
+        self.datasetOriginal.describe()
+
+    def GenerarHistogramas(self):
+        for columna in self.datasetOriginal.columns:
+            sns.displot(self.datasetOriginal[columna])
