@@ -1,4 +1,3 @@
-from itertools import count
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,4 +5,10 @@ import seaborn as sns
 import sklearn as sl
 
 class RegresionLineal:
-    pass
+
+    def __init__(self, dataset, trainSize = 0.8):
+        self.datasetOriginal = dataset.copy()
+        
+        limiteParticion = int(len(dataset) * trainSize)
+        self.datasetTrain = dataset[0 : limiteParticion, :]
+        self.datasetTest = dataset[limiteParticion : , : ]
