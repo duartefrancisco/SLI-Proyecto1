@@ -40,3 +40,29 @@ class RegresionLineal:
             return self.datasetTest[columna]
         elif dataset.lower() == "original":
             return self.datasetOriginal[columna]
+
+    def Entrenar(self, variableDependiente, variableIndependiente, epochs, imprmir_error_cada, learningRate):
+        unos = np.ones(np.shape(variableDependiente)).reshape(-1,1)
+        x = variableDependiente.to_numpy().reshape(-1,1)
+        x = np.hstack([x, unos])
+        y = variableIndependiente.to_numpy()
+        beta0 = 0
+        beta1 = 0
+        errores = []
+        modelos = {}
+
+        for i in range(epochs):
+            modelos[i] = [beta0, beta1]
+            betas = np.array([beta1, beta0]).reshape(-1, 1)
+            yEstimado = np.matmul(x, betas)
+            gradienteB0 = np.mean(yEstimado - y)
+            gradienteB1 = np.mean((yEstimado - y) * x)
+            beta0 = beta0 - learningRate * gradienteB0
+            beta1 = beta1 - learningRate * gradienteB1
+
+            if (i % imprmir_error_cada) == 0:
+                errores.append(np.mean((yEstimado - y)**2) * 1/2)
+        
+        return modelos, errores
+
+
