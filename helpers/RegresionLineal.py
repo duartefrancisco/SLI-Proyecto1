@@ -59,10 +59,12 @@ class RegresionLineal:
             gradienteB1 = np.mean((yEstimado - y) * x)
             beta0 = beta0 - learningRate * gradienteB0
             beta1 = beta1 - learningRate * gradienteB1
-
+            error = np.mean((yEstimado - y)**2) * 1/2
+            errores.append(error)
             if (i % imprmir_error_cada) == 0:
-                errores.append(np.mean((yEstimado - y)**2) * 1/2)
-        
+                print(f"Iteración = {i}, Error = {error}")
+                
         return modelos, errores
 
+    
 
