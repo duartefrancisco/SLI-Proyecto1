@@ -1,3 +1,4 @@
+from random import random
 from typing_extensions import Self
 import numpy as np
 import pandas as pd
@@ -66,5 +67,21 @@ class RegresionLineal:
                 
         return modelos, errores
 
+    def VisualizacionError(self, errores):
+        plt.scatter(range(len(errores)), errores)
+        plt.show()
     
+    def VisualizacionDelModelo(self, dataset, n):
+        tempX = random.sample(range(200), 15).to_numpy().shape(-1,1)
+        tempBetas = dataset.copy()
+        tempBetas.drop(columns = ["Iteración","Error"], inplace = True)
+        tempBetas = tempBetas.to_numpy()
+        for i in range(len(dataset)):
+            if (i % n) == 0:
+                plt.plot(i, np.mapmul(tempX, tempBetas) )
+                plt.show()
+        
+        print("Datos entrenamiento\n")
+        tempX
+        
 
