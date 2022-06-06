@@ -50,10 +50,11 @@ class RegresionLineal:
         beta0 = 0
         beta1 = 0
         errores = []
-        modelos = {}
+        modelos = pd.DataFrame(columns= ["Intento", "Betas"])
 
         for i in range(epochs):
-            modelos[i] = [beta0, beta1]
+            modelos.append({"Intento": i, "Betas": [beta0, beta1]})
+            #modelos[i] = [beta0, beta1]
             betas = np.array([beta1, beta0]).reshape(-1, 1)
             yEstimado = np.matmul(x, betas)
             gradienteB0 = np.mean(yEstimado - y)
@@ -74,11 +75,10 @@ class RegresionLineal:
     def VisualizacionDelModelo(self, dataset, n):
         tempX = random.sample(range(200), 15).to_numpy().shape(-1,1)
         tempBetas = dataset.copy()
-        tempBetas.drop(columns = ["Iteración","Error"], inplace = True)
         tempBetas = tempBetas.to_numpy()
         for i in range(len(dataset)):
             if (i % n) == 0:
-                plt.plot(i, np.mapmul(tempX, tempBetas) )
+                plt.plot(i, np.mapmul(tempX, tempBetas.iloc[i, 1]))
                 plt.show()
         
         print("Datos entrenamiento\n")
