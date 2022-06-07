@@ -17,7 +17,7 @@ class RegresionLineal:
         self.target = target
 
     def AnalisisExploratorio(self):
-        self.datasetOriginal.describe()
+        print(self.datasetOriginal.describe())
 
     def GenerarHistogramas(self):
         for columna in self.datasetOriginal.columns:
