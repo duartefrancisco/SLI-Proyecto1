@@ -12,8 +12,8 @@ class RegresionLineal:
         self.datasetOriginal = dataset.copy()
         
         limiteParticion = int(len(dataset) * trainSize)
-        self.datasetTrain = dataset[0 : limiteParticion, :]
-        self.datasetTest = dataset[limiteParticion : , : ]
+        self.datasetTrain = dataset.iloc[0 : limiteParticion, :]
+        self.datasetTest = dataset.iloc[limiteParticion : , : ]
         self.target = target
 
     def AnalisisExploratorio(self):
