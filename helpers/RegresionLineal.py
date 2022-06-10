@@ -1,10 +1,12 @@
-from random import random
+from multiprocessing import set_forkserver_preload
+import random
+from this import s
 from typing_extensions import Self
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import sklearn as sl
+from sklearn.linear_model import LinearRegression
 
 class RegresionLineal:
 
@@ -42,23 +44,28 @@ class RegresionLineal:
         elif dataset.lower() == "original":
             return self.datasetOriginal[columna]
 
+    
+    def __CalcularPrediccion(self, x, betas):
+        tempBetas = np.array(betas).reshape(-1, 1)
+        
+        return np.matmul(x, tempBetas)
+
     def Entrenar(self, variableDependiente, variableIndependiente, epochs, imprmir_error_cada, learningRate):
         unos = np.ones(np.shape(variableDependiente)).reshape(-1,1)
-        x = variableDependiente.to_numpy().reshape(-1,1)
-        x = np.hstack([x, unos])
-        y = variableIndependiente.to_numpy()
+        X = variableIndependiente.to_numpy().reshape(-1,1)
+        A = np.hstack([X, unos])
+        y = variableDependiente.to_numpy()
         beta0 = 0
         beta1 = 0
         errores = []
-        modelos = pd.DataFrame(columns= ["Intento", "Betas"])
-
+        modelos = {}
+        
         for i in range(epochs):
-            modelos.append({"Intento": i, "Betas": [beta0, beta1]})
-            #modelos[i] = [beta0, beta1]
-            betas = np.array([beta1, beta0]).reshape(-1, 1)
-            yEstimado = np.matmul(x, betas)
+            #modelos = pd.concat([modelos, pd.DataFrame([i, [beta0, beta1]], columns= ["Intento", "Betas"])], ignore_index= True)
+            modelos[i] = [beta1, beta0]
+            yEstimado = self.__CalcularPrediccion(A, [beta1, beta0])
             gradienteB0 = np.mean(yEstimado - y)
-            gradienteB1 = np.mean((yEstimado - y) * x)
+            gradienteB1 = np.mean((yEstimado - y) * X)
             beta0 = beta0 - learningRate * gradienteB0
             beta1 = beta1 - learningRate * gradienteB1
             error = np.mean((yEstimado - y)**2) * 1/2
@@ -69,19 +76,71 @@ class RegresionLineal:
         return modelos, errores
 
     def VisualizacionError(self, errores):
-        plt.scatter(range(len(errores)), errores)
+        #np.array(range(1,len(errores)+1))
+        plt.scatter(np.array(range(1,len(errores)+1)), np.array(errores))
         plt.show()
     
-    def VisualizacionDelModelo(self, dataset, n):
-        tempX = random.sample(range(200), 15).to_numpy().shape(-1,1)
-        tempBetas = dataset.copy()
-        tempBetas = tempBetas.to_numpy()
-        for i in range(len(dataset)):
+    def VisualizacionDelModelo(self, modelos, n, variable):
+        #tempX = random.sample(range(200), 15).to_numpy().shape(-1,1)
+        tempX = self.datasetTrain[variable].to_numpy().reshape(-1,1)
+        tempBetas = modelos.copy()
+        #tempBetas = tempBetas.to_numpy()
+        unos = np.ones(np.shape(self.datasetTrain[variable])).reshape(-1,1)
+        x = np.hstack([tempX, unos])
+
+        fig = plt.figure()   
+        ax = fig.add_subplot(111)
+        for i in range(len(tempBetas)):
             if (i % n) == 0:
-                plt.plot(i, np.mapmul(tempX, tempBetas.iloc[i, 1]))
-                plt.show()
-        
+                y = self.__CalcularPrediccion(x, tempBetas[i])
+
+                ax.plot(tempX, y)
+                
+        plt.legend()
+        plt.show()
+
         print("Datos entrenamiento\n")
-        tempX
+        print(pd.DataFrame(tempX))
+        print("Fin Datos entrenamiento")
+
+    def EntrenarSklearn(self, variable):
+        tempX = self.datasetTrain[variable].to_numpy().reshape(-1,1)
+        tempY = self.datasetTrain[self.target].to_numpy().reshape(-1,1)
+
+        reg = LinearRegression()
+        reg.fit(tempX, tempY)
+
+        return reg
+
+    def Predicciones(self, modeloMnaual, modeloSklearn, x):
+        tempX = np.array(x).reshape(-1,1)
+        prediccionPromedio = []
+        unos = np.ones(np.shape(x)).reshape(-1,1)
+        betasManual = np.array(modeloMnaual).reshape(-1,1)
+        X = np.hstack([tempX, unos])
+        
+        yManual = self.__CalcularPrediccion(X, modeloMnaual)
+        ySklearn = modeloSklearn.predict(tempX)
+        prediccionPromedio = (yManual + ySklearn)/2
+            
+        return yManual, ySklearn, prediccionPromedio
+
+
+    def PrediccionesTest(self, variable, modelo):
+        tempX = self.datasetTest[variable].to_numpy().reshape(-1,1)
+        y = self.datasetTest[self.target].to_numpy()
+        betas = np.array(modelo).reshape(-1,1)
+        unos = unos = np.ones(np.shape(self.datasetTest[variable])).reshape(-1,1)
+        x = np.hstack([tempX, unos])
+        
+
+        yEstimado = self.__CalcularPrediccion(x, betas)
+        errores = yEstimado[0] - y
+        xRango = range(1,len(self.datasetTest[variable])+1)
+        plt.scatter(np.array(xRango), errores)
+        plt.show()
+
+
+
         
 
