@@ -1,6 +1,7 @@
 from multiprocessing import set_forkserver_preload
 import random
 from this import s
+from turtle import color
 from typing_extensions import Self
 import numpy as np
 import pandas as pd
@@ -96,12 +97,19 @@ class RegresionLineal:
 
                 ax.plot(tempX, y)
                 
-        plt.legend()
+        plt.xlabel("Datos Entrenamiento")
+        plt.ylabel("Estimación")
         plt.show()
 
         print("Datos entrenamiento\n")
         print(pd.DataFrame(tempX))
         print("Fin Datos entrenamiento")
+
+    def SeleccionarModelo(self, modelos, errores):
+        errorMinimo = np.argmin(errores)
+        
+        return modelos[errorMinimo]
+        
 
     def EntrenarSklearn(self, variable):
         tempX = self.datasetTrain[variable].to_numpy().reshape(-1,1)
@@ -136,9 +144,35 @@ class RegresionLineal:
 
         yEstimado = self.__CalcularPrediccion(x, betas)
         errores = yEstimado[0] - y
-        xRango = range(1,len(self.datasetTest[variable])+1)
-        plt.scatter(np.array(xRango), errores)
+
+        print(modelo)
+        plt.scatter(self.datasetTest[variable], self.datasetTest[self.target])
+        plt.plot(self.datasetTest[variable], yEstimado, color = "black")
+        plt.title(f"Regresión Lineal Simple - {variable} -Data Train")
         plt.show()
+
+        return errores
+
+    def PrediccionesTestSklearn(self, variable, modelo):
+        tempX = self.datasetTest[variable].to_numpy().reshape(-1,1)
+        y = self.datasetTest[self.target].to_numpy()        
+
+        yEstimado = modelo.predict(tempX)
+        errores = yEstimado[0] - y
+        
+        plt.scatter(self.datasetTest[variable], self.datasetTest[self.target])
+        plt.plot(self.datasetTest[variable], yEstimado, color = "black")
+        plt.title(f"Regresión Lineal Simple - {variable} -Data Train")
+        plt.show()
+
+        return errores
+
+    def VisualizacionErrorTest(self, variable, errores):
+        xRango = range(1,len(self.datasetTest[variable])+1)
+        error = np.mean((errores)**2) * 1/2
+        plt.scatter(xRango, errores)
+        plt.title(f"Erroes del modelo para {variable} - Error: {error}")
+        plt.show() 
 
 
 
