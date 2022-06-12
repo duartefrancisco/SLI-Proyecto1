@@ -1,7 +1,4 @@
-from multiprocessing import set_forkserver_preload
-import random
 from this import s
-from turtle import color
 from typing_extensions import Self
 import numpy as np
 import pandas as pd
